@@ -11,7 +11,6 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,11 +24,98 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
 
-    private static final int EDIT = 0, DELETE = 1;
+public class LoginActivity extends Activity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "LoginActivity";
+    private EditText usernameTxt, passwordTxt;
+    private TextView testoProva, testoListaUtenti;
+    private Button loginBtn;
+    DbHandler dbHandler;
+
+    public static final String EXTRA_MESSAGE = "com.android.francesco.rotations.MESSAGE";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login_page);
+
+        usernameTxt = (EditText) findViewById(R.id.username);
+        passwordTxt = (EditText) findViewById(R.id.password);
+        loginBtn = (Button) findViewById(R.id.button);
+        testoProva = (TextView) findViewById(R.id.testoProva);
+        testoListaUtenti = (TextView) findViewById(R.id.testoListaUtenti);
+        testoProva.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick on text...redirect to creation page...");
+                Intent launchCreateActivity = new Intent();
+                getIntent().putExtra(EXTRA_MESSAGE, "New user");
+                launchCreateActivity.setClass(getApplicationContext(), CreateUserActivity.class);
+                startActivity(launchCreateActivity);
+            }
+        });
+        testoListaUtenti.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick on text...redirect to users list...");
+                Intent launchCreateActivity = new Intent();
+                getIntent().putExtra(EXTRA_MESSAGE, "User List");
+                launchCreateActivity.setClass(getApplicationContext(), AllUsersActivity.class);
+                startActivity(launchCreateActivity);
+            }
+        });
+
+        dbHandler = new DbHandler(getApplicationContext());
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClicked with username" + usernameTxt.getText());
+                testoProva.setText(usernameTxt.getText());
+                Toast.makeText(getApplicationContext(), "Welcome " + String.valueOf(usernameTxt.getText()), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, String.valueOf(dbHandler.getUsersCount()));
+                User user = new User();
+                user.setId(dbHandler.getUsersCount() + 1);
+                user.setUsername(usernameTxt.getText().toString().trim());
+                user.setPassword(passwordTxt.getText().toString().trim());
+                dbHandler.createUser(user);
+                Toast.makeText(getApplicationContext(), String.valueOf(usernameTxt.getText()) + " has been added to your contacts!", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, String.valueOf(dbHandler.getUsersCount()));
+                sendMessage(view);
+                /*Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), MainActivity.class);
+                intent.putExtra("username", usernameTxt.getText().toString());
+                startActivity(intent); */
+
+                /*Contact contact = new Contact(dbHandler.getContactsCount(), String.valueOf(nameTxt.getText()), String.valueOf(phoneTxt.getText()), String.valueOf(emailTxt.getText()), String.valueOf(addressTxt.getText()), imageUri);
+                if (!contactExists(contact)) {
+                    dbHandler.createContact(contact);
+                    contacts.add(contact);
+                    contactAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), String.valueOf(nameTxt.getText()) + " has been added to your contacts!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(getApplicationContext(), String.valueOf(nameTxt.getText()) + " already exists. Please use a different name.", Toast.LENGTH_SHORT).show();
+                */
+            }
+        });
+
+    }
+
+    /** Called when the user taps the Send button */
+    public void sendMessage(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        //EditText editText = (EditText) findViewById(R.id.editText);
+        String message = usernameTxt.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
+
+    /*private static final int EDIT = 0, DELETE = 1;
+
     EditText nameTxt, phoneTxt, emailTxt, addressTxt;
     ImageView contactImageImgView;
     List<Contact> contacts = new ArrayList<Contact>();
@@ -43,10 +129,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent intent = getIntent();
-        String username = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
-        Log.d(TAG, username);
 
         nameTxt = (EditText) findViewById(R.id.txtName);
         phoneTxt = (EditText) findViewById(R.id.txtPhone);
@@ -65,8 +147,6 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
-
-
 
         TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
 
@@ -180,9 +260,9 @@ public class MainActivity extends Activity {
         //contactAdapter = new ContactListAdapter();
         //contactListView.setAdapter(contactAdapter);
 
-    }
+    }*/
 
-    private class ContactListAdapter extends ArrayAdapter<Contact> {
+    /*private class ContactListAdapter extends ArrayAdapter<Contact> {
         public ContactListAdapter() {
             super (MainActivity.this, R.layout.listview_item, contacts);
         }
@@ -194,6 +274,10 @@ public class MainActivity extends Activity {
 
             Contact currentContact = contacts.get(position);
 
+            TextView name = (TextView) view.findViewById(R.id.contactName);
+            name.setText(currentContact.getName());
+            TextView phone = (TextView) view.findViewById(R.id.phoneNumber);
+            phone.setText(currentContact.getPhone());
             TextView email = (TextView) view.findViewById(R.id.emailAddress);
             email.setText(currentContact.getEmail());
             TextView address = (TextView) view.findViewById(R.id.cAddress);
@@ -205,7 +289,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;

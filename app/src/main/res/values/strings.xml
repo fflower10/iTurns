@@ -3,4 +3,13 @@
     <string name="insert_name">Insert name ...</string>
     <string name="label_button">ENTER</string>
     <string name="label_welcome">What\'s happening ...</string>
+    <string name="lb_username">Username</string>
+    <string name="lb_password">Password</string>
+    <string name="lb_name">Name</string>
+    <string name="lb_surname">Surname</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_create">CREATE</string>
+    <string name="label_login">WELCOME</string>
+    <string name="label_list_users">USERS</string>
+    <string name="label_create">CREATE YOUR PROFILE</string>
 </resources>
